@@ -1,6 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {News, NewsWithoutId} from "../../types";
 import axiosAPI from "../../axiosAPI.ts";
+import axiosApi from "../../axiosAPI.ts";
 
 export const getNews = createAsyncThunk<News[], void>(
     'news/getNews', async () => {
@@ -23,4 +24,8 @@ export const createNews = createAsyncThunk<void, NewsWithoutId>("news/createNews
     });
 
     await axiosAPI.post("/news", formData);
+});
+
+export const deleteNews = createAsyncThunk<void, string>('news/deleteNews', async (id: string) => {
+    await axiosApi.delete(`/news/${id}`);
 });
