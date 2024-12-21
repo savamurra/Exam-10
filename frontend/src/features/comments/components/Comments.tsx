@@ -1,21 +1,24 @@
-import {Box, Button, Card, CardActions, Typography} from "@mui/material";
+import {Box, Button, Card, CardActions, CardMedia, Typography} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../../app/hooks.ts";
 import { newsId} from "../../news/newsSlice.ts";
-import {allComments} from "../commentsSlice.ts";
+import {allComments, isDelete} from "../commentsSlice.ts";
 import CommentsForm from "./CommentsForm.tsx";
 import {useCallback, useEffect} from "react";
 import {getNewsId} from "../../news/newsThunk.ts";
 import {useParams} from "react-router-dom";
 import {deleteComments, getComments} from "../commentsThunk.ts";
+import {apiUrl} from "../../../globalConstants.ts";
+import picture from "../../../../public/notfound.png";
+import dayjs from 'dayjs';
 
 
 const Comments = () => {
     const {id} = useParams<{id: string}>();
 
-
     const news = useAppSelector(newsId);
     const comments = useAppSelector(allComments);
     const dispatch = useAppDispatch();
+    const deleteLoading = useAppSelector(isDelete);
 
     const onDelete = useCallback(async (commentId: string) => {
         await dispatch(deleteComments(commentId));
@@ -23,6 +26,9 @@ const Comments = () => {
             await dispatch(getComments(id))
         }
     }, [dispatch]);
+
+    const newsMessage = news?.image ? apiUrl + '/' + news.image : picture;
+
 
     useEffect(() => {
         if (id) {
@@ -37,6 +43,7 @@ const Comments = () => {
 
     return (
         <>
+
             <>
                 <Box sx={{
                     flexGrow: 1,
@@ -48,16 +55,30 @@ const Comments = () => {
                     backgroundColor: "#f9f9f9",
                     marginBottom: "10px",
                 }} key={news.id}>
-                    <Typography>Title:{news.title}</Typography>
-                    <Typography>Description: {news.description}</Typography>
-                    <Typography>{news.created_at}</Typography>
+                    <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                        <Box>
+                            <Typography>Title:{news.title}</Typography>
+                            <Typography>Description: {news.description}</Typography>
+                            <Typography>At: {dayjs(news.created_at).format("YYYY-MM-DD HH:mm")}</Typography>
+                        </Box>
+                        <CardActions>
+                            <CardMedia
+                                style={{ width: '150px', border: "3px solid white" }}
+                                component="img"
+                                image={newsMessage}
+                                title={news.title}
+                            />
+                        </CardActions>
+                    </Box>
+
+
                     {Array.isArray(comments) && comments.length > 0 ? (
                         comments.map((comment) => (
                             <Card sx={{marginBottom: 2, marginTop: 1}} key={comment.id}>
                                 <CardActions>
                                     <div>
                                         <Typography>{comment.author} wrote: {comment.comments_text}</Typography>
-                                        <Button onClick={() => onDelete(comment.id)}>Delete</Button>
+                                        <Button disabled={deleteLoading} onClick={() => onDelete(comment.id)}>Delete</Button>
                                     </div>
                                 </CardActions>
                             </Card>

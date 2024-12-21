@@ -23,6 +23,8 @@ const initialState: NewsSlice = {
 export const allNews = (state: RootState) => state.news.news;
 export const newsId= (state: RootState) => state.news.newsId;
 export const isCreate = (state: RootState) => state.news.createLoading;
+export const deleteLoading = (state: RootState) => state.news.deleteLoading;
+export const getLoading = (state: RootState) => state.news.getLoading;
 
 const newsSlice = createSlice({
     name: "news",
