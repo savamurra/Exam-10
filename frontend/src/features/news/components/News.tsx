@@ -4,7 +4,7 @@ import {allNews} from "../newsSlice.ts";
 import {useCallback, useEffect} from "react";
 import {deleteNews, getNews} from "../newsThunk.ts";
 import dayjs from "dayjs";
-import {Link, NavLink} from "react-router-dom";
+import { NavLink} from "react-router-dom";
 import {apiUrl} from "../../../globalConstants.ts";
 import picture from '../../../../public/no_image.jpg';
 
@@ -72,10 +72,10 @@ const News = () => {
                                 </CardContent>
                             </Box>
                             <CardContent sx={{ width: 300 }}>
-                                <Link style={{ textDecoration: "none" }} to="/news">Read full post</Link>
+                                <Button  to={`/readNews/${news.id}`} component={NavLink} >Read full post</Button>
                             </CardContent>
                             <CardContent sx={{ width: 300 }}>
-                                <Button style={{ textDecoration: "none" }} type="button" onClick={() => onDelete(news.id)}>Delete</Button>
+                                <Button  type="button" onClick={() => onDelete(news.id)}>Delete</Button>
                             </CardContent>
                         </Card>
                     </>

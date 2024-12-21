@@ -10,6 +10,14 @@ export const getNews = createAsyncThunk<News[], void>(
     }
 );
 
+export const getNewsId = createAsyncThunk<News, string>(
+    'news/getNewsId', async (id:string) => {
+        const newsResponse = await axiosAPI<News>(`/news/${id}`);
+        return newsResponse.data || [];
+    }
+);
+
+
 export const createNews = createAsyncThunk<void, NewsWithoutId>("news/createNews", async (news) => {
     const formData = new FormData();
 

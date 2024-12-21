@@ -1,10 +1,11 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {News} from "../../types";
-import {createNews, deleteNews, getNews} from "./newsThunk.ts";
+import {createNews, deleteNews, getNews, getNewsId} from "./newsThunk.ts";
 import {RootState} from "../../app/store.ts";
 
 interface NewsSlice {
     news: News[];
+    newsId: News | null
     createLoading: boolean;
     getLoading: boolean;
     deleteLoading: boolean;
@@ -12,12 +13,15 @@ interface NewsSlice {
 
 const initialState: NewsSlice = {
     news: [],
+    newsId: null,
     createLoading: false,
     getLoading: false,
     deleteLoading: false,
 }
 
+
 export const allNews = (state: RootState) => state.news.news;
+export const newsId= (state: RootState) => state.news.newsId;
 export const isCreate = (state: RootState) => state.news.createLoading;
 
 const newsSlice = createSlice({
@@ -34,6 +38,16 @@ const newsSlice = createSlice({
                 state.news = news;
             })
             .addCase(getNews.rejected, (state) => {
+                state.getLoading = false;
+            })
+            .addCase(getNewsId.pending, (state) => {
+                state.getLoading = true;
+            })
+            .addCase(getNewsId.fulfilled, (state, {payload: newsId}) => {
+                state.getLoading = false;
+                state.newsId = newsId;
+            })
+            .addCase(getNewsId.rejected, (state) => {
                 state.getLoading = false;
             })
             .addCase(createNews.pending, (state) => {
