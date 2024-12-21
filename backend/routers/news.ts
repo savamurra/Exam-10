@@ -30,7 +30,7 @@ newsRouter.get('/:id', async (req, res, next) => {
 
     try {
         if (news.length === 0) {
-            res.status(404).send("Comment not found");
+            res.status(404).send("News not found");
         } else {
             res.send(news[0]);
         }

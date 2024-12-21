@@ -5,36 +5,50 @@ import {ResultSetHeader} from "mysql2";
 
 const commentsRouter = express.Router();
 
-commentsRouter.get('/', async (req, res) => {
-    const connection = await mysqlDB.getConnection();
+commentsRouter.get('/', async (req, res, next) => {
+        const commentsId = req.query.comments_id as string;
+        const connection = await mysqlDB.getConnection();
 
-    const [result] = await connection.query('SELECT * FROM comments');
-
-    const comment = result as Comment[];
-
-    if (comment.length === 0) {
-        res.send("No results found!");
-    } else {
-        res.send(comment);
+        try {
+            if (commentsId) {
+                const [result] = await connection.query('SELECT * FROM comments WHERE comments_id = ?', [commentsId]);
+                const comment = result as Comment[];
+                if (comment.length === 0) {
+                    res.send('No comments found for news id');
+                } else {
+                    res.send(comment);
+                }
+            } else {
+                const [result] = await connection.query('SELECT * FROM comments');
+                const comment = result as Comment[];
+                if (comment.length === 0) {
+                    res.send("No results found!");
+                } else {
+                    res.send(comment);
+                }
+            }
+        } catch (e) {
+            next(e)
+        }
     }
-})
+)
 
 
 commentsRouter.post('/', async (req, res, next) => {
-    if (!req.body.comments_id || !req.body.comment_text) {
-        res.status(400).send({error: "Please send a title and description"});
+    if (!req.body.comments_id || !req.body.comments_text) {
+        res.status(400).send({error: "Please send a text and comments_id"});
         return;
     }
 
     const comment: CommentWithoutId = {
         comments_id: req.body.comments_id,
         author: req.body.author ? req.body.author : 'Anonymous',
-        comment_text: req.body.comment_text,
+        comments_text: req.body.comments_text,
     }
 
     try {
         const connection = await mysqlDB.getConnection();
-        const [result] = await connection.query('INSERT INTO comments (comments_id, author, comment_text) VALUES (?,?,?)', [comment.comments_id, comment.author, comment.comment_text]);
+        const [result] = await connection.query('INSERT INTO comments (comments_id, author, comments_text) VALUES (?,?,?)', [comment.comments_id, comment.author, comment.comments_text]);
         const resultHeader = result as ResultSetHeader;
         const [resultOneComment] = await connection.query('SELECT * FROM comments WHERE id=?', [resultHeader.insertId]);
         const oneComment = resultOneComment as News[];

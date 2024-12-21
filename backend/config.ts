@@ -9,7 +9,7 @@ const config = {
         host: 'localhost',
         user: 'root',
         password: '1qaz@WSX29',
-        database: 'exam-9-Sanzhar',
+        database: 'exam-10-Sanzhar',
     }
 }
 

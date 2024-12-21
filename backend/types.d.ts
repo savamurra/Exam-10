@@ -12,7 +12,7 @@ export interface Comment {
     id: string;
     comments_id: string;
     author: string;
-    comment_text: string;
+    comments_text: string;
 }
 
 export type CommentWithoutId = Omit<Comment, 'id'>;
