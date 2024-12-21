@@ -18,7 +18,6 @@ const initialState: CommentsSliceState =  {
 }
 
 export const isCreate = (state: RootState) => state.news.createLoading;
-export const isLoading  =  (state: RootState) => state.comments.getLoading
 export const isDelete = (state: RootState) => state.comments.deleteLoading
 export const allComments = (state: RootState) => state.comments.comments
 
