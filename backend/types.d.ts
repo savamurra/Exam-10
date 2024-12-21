@@ -3,10 +3,10 @@ export interface News {
     title: string;
     description: string;
     image: string | null;
-    create_at: string;
+    created_at: string;
 }
 
-export type NewsWithoutId = Omit<News, 'id' | 'create_at'>
+export type NewsWithoutId = Omit<News, 'id' | 'created_at'>
 
 export interface Comment {
     id: string;

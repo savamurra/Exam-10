@@ -10,7 +10,7 @@ const newsRouter = express.Router();
 newsRouter.get('/', async (req, res) => {
     const connection = await mysqlDB.getConnection();
 
-    const [result] = await connection.query('SELECT id,title,image,create_at FROM news');
+    const [result] = await connection.query('SELECT id,title,image,created_at FROM news');
 
     const news = result as News[];
 
