@@ -1,8 +1,9 @@
 import express from "express";
 import mysqlDB from "../mysqlDB";
-import {News, NewsWithoutId} from "../types";
+import {Comment, News, NewsWithoutId} from "../types";
 import {ResultSetHeader} from "mysql2";
 import {imagesUpload} from "../multer";
+import commentsRouter from "./comments";
 
 const newsRouter = express.Router();
 
@@ -13,11 +14,33 @@ newsRouter.get('/', async (req, res) => {
 
     const news = result as News[];
 
-    res.send(news);
-})
+    if (news.length === 0) {
+        res.send("No results found!");
+    } else {
+        res.send(news);
+    }
+});
 
-newsRouter.post('/',  imagesUpload.single('image'),async (req, res,next) => {
-    if(!req.body.title || !req.body.description) {
+newsRouter.get('/:id', async (req, res, next) => {
+    const id = req.params.id;
+    const connection = await mysqlDB.getConnection();
+    const [result] = await connection.query('SELECT * FROM news WHERE id = ?', [id]);
+
+    const news = result as News[];
+
+    try {
+        if (news.length === 0) {
+            res.status(404).send("Comment not found");
+        } else {
+            res.send(news[0]);
+        }
+    } catch (e) {
+        next(e);
+    }
+});
+
+newsRouter.post('/', imagesUpload.single('image'), async (req, res, next) => {
+    if (!req.body.title || !req.body.description) {
         res.status(400).send({error: "Please send a title and description"});
         return;
     }
@@ -40,10 +63,27 @@ newsRouter.post('/',  imagesUpload.single('image'),async (req, res,next) => {
         } else {
             res.send(oneNews[0]);
         }
-    } catch (e){
+    } catch (e) {
         next(e);
     }
 });
+
+newsRouter.delete('/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const connection = await mysqlDB.getConnection();
+        const [result] = await connection.query('DELETE FROM news WHERE id=?', [id]);
+        const resultHeader = result as ResultSetHeader;
+
+        if (resultHeader.affectedRows > 0) {
+            res.send("News deleted successfully");
+        } else {
+            res.status(500).send("Failed to delete news");
+        }
+    } catch (e) {
+        next(e);
+    }
+})
 
 
 export default newsRouter;
